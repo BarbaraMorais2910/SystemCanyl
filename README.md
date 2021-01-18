@@ -10,3 +10,9 @@ _Diagrama UML__
 
 <img width="800" alt="portfolio_view" src="UML.png">
 
+
+
+_Modelo de Navegação__
+
+<img width="800" alt="portfolio_view" src="ModeloNavegacional.png">
+
