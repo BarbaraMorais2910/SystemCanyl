@@ -1,6 +1,7 @@
 package model.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,14 +21,25 @@ public class ServicoDAO {
 		try {
 
 			Connection con = conexao.getConection();
-			Statement st = (Statement) con.createStatement();
-			String sql = String.format(
-					"INSERT INTO Servico(codigo, nome, tipo, valor, responsavelCpf, funcionarioCpf, dataInicio, dataFim) "
-							+ "VALUES (%d, '%s', %s, %f, '%s', '%s', %s, '%s')",
-					servico.getCodigo(), servico.getNome(), servico.getTipo(), servico.getValor(),
-					servico.getResponsavelCpf(), servico.getFuncionarioCpf(), servico.getDataInicio(),
-					servico.getDataFim());
-			st.executeUpdate(sql);
+
+			// Statement st = (Statement) con.createStatement();
+			// String sql = String.format(
+			// "INSERT INTO Servico(tipo, dataInicio, dataFim, valor, responsavelCpf) "
+			// + "VALUES ('%s', '%s', '%s', %f, '%s')",
+			// servico.getTipo(), servico.getDataInicio(), servico.getDataFim(),
+			// servico.getValor(),
+			// servico.getResponsavelCpf());
+			// st.executeUpdate(sql);
+
+			String sql = "INSERT INTO Servico(tipo, dataInicio, dataFim, valor, responsavelCpf) VALUES(?,?,?,?,?)";
+			PreparedStatement prest = con.prepareStatement(sql);
+			prest.setString(1, servico.getTipo());
+			prest.setDate(2, new java.sql.Date(servico.getDataInicio().getTime()));
+			prest.setDate(3, new java.sql.Date(servico.getDataFim().getTime()));
+			prest.setDouble(4, servico.getValor());
+			prest.setString(5, servico.getResponsavelCpf());
+			prest.executeUpdate();
+
 			con.close();
 
 		} catch (SQLException e) {
@@ -41,11 +53,10 @@ public class ServicoDAO {
 			Connection con = conexao.getConection();
 			Statement st = (Statement) con.createStatement();
 			String sql = String.format(
-					"UPDATE Servico SET codigo=%d, nome='%s', tipo='%s', valor='%s', responsavelCpf='%s', "
-							+ "funcionarioCpf='%s', dataInicio='%s', dataFim='%s' WHERE codigo=%d",
-					servico.getCodigo(), servico.getNome(), servico.getTipo(), servico.getValor(),
-					servico.getResponsavelCpf(), servico.getFuncionarioCpf(), servico.getDataInicio(),
-					servico.getDataFim(), servico.getCodigo());
+					"UPDATE Servico SET tipo='%s', dataInicio='%s', dataFim='%s', valor=%f, responsavelCpf='%s'"
+							+ " WHERE responsavelCpf='%s'",
+					servico.getTipo(), servico.getDataInicio(), servico.getDataFim(), servico.getValor(),
+					servico.getResponsavelCpf(), servico.getResponsavelCpf());
 			st.executeUpdate(sql);
 			con.close();
 
@@ -60,7 +71,7 @@ public class ServicoDAO {
 
 			Connection con = conexao.getConection();
 			Statement st = (Statement) con.createStatement();
-			String sql = String.format("DELETE FROM Servico WHERE codigo=%d", servico.getCodigo());
+			String sql = String.format("DELETE FROM Servico WHERE responsavelCpf='%s'", servico.getResponsavelCpf());
 			st.executeUpdate(sql);
 			con.close();
 
@@ -80,14 +91,10 @@ public class ServicoDAO {
 			while (rs.next()) {
 				ServicoVO ser = new ServicoVO();
 
-				ser.setCodigo(rs.getInt("codigo"));
-				ser.setNome(rs.getString("nome"));
 				ser.setTipo(rs.getString("tipo"));
-				ser.setValor(rs.getDouble("valor"));
-				ser.setResponsavelCpf(rs.getString("responsavelCpf"));
-				ser.setFuncionarioCpf(rs.getString("funcionarioCpf"));
 				ser.setDataInicio(rs.getDate("dataInicio"));
 				ser.setDataFim(rs.getDate("dataFim"));
+				ser.setResponsavelCpf(rs.getString("responsavelCpf"));
 
 				servicos.add(ser);
 			}
@@ -103,4 +110,39 @@ public class ServicoDAO {
 
 		return null;
 	}
+
+	public ArrayList<ServicoVO> listarPorCpf(ServicoVO servico) {
+		try {
+			ArrayList<ServicoVO> servicos = new ArrayList<ServicoVO>();
+
+			Connection con = conexao.getConection();
+
+			String sql = String.format("SELECT * FROM Servico WHERE responsavelCpf='%s'", servico.getResponsavelCpf());
+			PreparedStatement stm = con.prepareStatement(sql);
+			ResultSet rs = stm.executeQuery();
+			while (rs.next()) {
+				ServicoVO ser = new ServicoVO();
+
+				ser.setId(rs.getInt("id"));
+				ser.setTipo(rs.getString("tipo"));
+				ser.setValor(rs.getDouble("valor"));
+				ser.setDataInicio(rs.getDate("dataInicio"));
+				ser.setDataFim(rs.getDate("dataFim"));
+				ser.setResponsavelCpf(rs.getString("responsavelCpf"));
+
+				servicos.add(ser);
+			}
+			rs.close();
+			stm.close();
+			con.close();
+
+			return servicos;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 }

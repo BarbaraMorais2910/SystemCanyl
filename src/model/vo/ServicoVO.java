@@ -1,15 +1,13 @@
 package model.vo;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class ServicoVO {
-	private int codigo;
-	private String nome;
+	private int Id;
 	private String tipo;
 	private double valor;
 	private String responsavelCpf;
-	private String funcionarioCpf;
+	// private String funcionarioCpf;
 	private Date dataInicio;
 	private Date dataFim;
 
@@ -17,33 +15,22 @@ public class ServicoVO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ServicoVO(int codigo, String nome, String tipo, double valor, String responsavelCpf, String funcionarioCpf,
-			Date dataInicio, Date dataFim) {
+	public ServicoVO(String tipo, Date dataInicio, Date dataFim, String responsavelCpf) {
 		super();
-		this.codigo = codigo;
-		this.nome = nome;
 		this.tipo = tipo;
-		this.valor = valor;
-		this.responsavelCpf = responsavelCpf;
-		this.funcionarioCpf = funcionarioCpf;
+		this.valor = 0;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
+		this.responsavelCpf = responsavelCpf;
+		// this.funcionarioCpf = funcionarioCpf;
 	}
 
-	public int getCodigo() {
-		return codigo;
+	public void setId(int id) {
+		Id = id;
 	}
 
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
+	public int getId() {
+		return Id;
 	}
 
 	public String getTipo() {
@@ -54,28 +41,19 @@ public class ServicoVO {
 		this.tipo = tipo;
 	}
 
-	public double getValor() {
-		return valor;
-	}
-
 	public void setValor(double valor) {
 		this.valor = valor;
 	}
 
-	public String getResponsavelCpf() {
-		return responsavelCpf;
-	}
+	public double getValor() {
+		if (this.tipo == "Adestramento")
+			this.valor = 100;
+		else if (this.tipo == "Hospedagem")
+			this.valor = 70;
+		else if (this.tipo == "Locação")
+			this.valor = 180;
 
-	public void setResponsavelCpf(String responsavelCpf) {
-		this.responsavelCpf = responsavelCpf;
-	}
-
-	public String getFuncionarioCpf() {
-		return funcionarioCpf;
-	}
-
-	public void setFuncionarioCpf(String funcionarioCpf) {
-		this.funcionarioCpf = funcionarioCpf;
+		return this.valor;
 	}
 
 	public Date getDataInicio() {
@@ -94,4 +72,18 @@ public class ServicoVO {
 		this.dataFim = dataFim;
 	}
 
+	public String getResponsavelCpf() {
+		return responsavelCpf;
+	}
+
+	public void setResponsavelCpf(String responsavelCpf) {
+		this.responsavelCpf = responsavelCpf;
+	}
+
+	/*
+	 * public String getFuncionarioCpf() { return funcionarioCpf; }
+	 * 
+	 * public void setFuncionarioCpf(String funcionarioCpf) { this.funcionarioCpf =
+	 * funcionarioCpf; }
+	 */
 }

@@ -5,7 +5,7 @@ public class AnimalVO {
 	private String raca;
 	private int idade;
 	private String tipo;
-	private int responsavelId;
+	private String responsavelCpf;
 
 	public AnimalVO() {
 		// TODO Auto-generated constructor stub
@@ -18,12 +18,12 @@ public class AnimalVO {
 		this.tipo = tipo;
 	}
 
-	public AnimalVO(String nome, String raca, int idade, String tipo, int responsavelId) {
+	public AnimalVO(String nome, String raca, int idade, String tipo, String responsavelCpf) {
 		this.nome = nome;
 		this.raca = raca;
 		this.idade = idade;
 		this.tipo = tipo;
-		this.responsavelId = responsavelId;
+		this.responsavelCpf = responsavelCpf;
 	}
 
 	public String getNome() {
@@ -58,12 +58,12 @@ public class AnimalVO {
 		this.tipo = tipo;
 	}
 
-	public int getResponsavelId() {
-		return this.responsavelId;
+	public void setResponsavelCpf(String responsavelCpf) {
+		this.responsavelCpf = responsavelCpf;
 	}
 
-	public void setResponsavelId(int responsavelId) {
-		this.responsavelId = responsavelId;
+	public String getResponsavelCpf() {
+		return responsavelCpf;
 	}
 
 }

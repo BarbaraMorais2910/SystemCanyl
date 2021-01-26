@@ -23,8 +23,9 @@ public class AnimalDAO {
 			Connection con = conexao.getConection();
 			Statement st = (Statement) con.createStatement();
 			String sql = String.format(
-					"INSERT INTO Animal(nome, raca, idade, tipo, responsavelid) VALUES ('%s', '%s', %d, '%s', %d)",
-					animal.getNome(), animal.getRaca(), animal.getIdade(), animal.getTipo(), animal.getResponsavelId());
+					"INSERT INTO Animal(nome, raca, idade, tipo, responsavelCpf) VALUES ('%s', '%s', %d, '%s', '%s')",
+					animal.getNome(), animal.getRaca(), animal.getIdade(), animal.getTipo(),
+					animal.getResponsavelCpf());
 			st.executeUpdate(sql);
 			con.close();
 
@@ -54,7 +55,7 @@ public class AnimalDAO {
 
 			Connection con = conexao.getConection();
 			Statement st = (Statement) con.createStatement();
-			String sql = String.format("DELETE FROM Animal WHERE nome='%s'", animal.getNome());
+			String sql = String.format("DELETE FROM Animal WHERE responsavelCpf='%s'", animal.getResponsavelCpf());
 			st.executeUpdate(sql);
 			con.close();
 
@@ -87,6 +88,37 @@ public class AnimalDAO {
 			con.close();
 
 			return animais;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public AnimalVO listarPorCpf(AnimalVO animal) {
+		try {
+			Connection con = conexao.getConection();
+
+			AnimalVO aniResp = new AnimalVO();
+
+			String sql = String.format("SELECT * FROM Animal WHERE responsavelCpf='%s'", animal.getResponsavelCpf());
+			PreparedStatement stm = con.prepareStatement(sql);
+			ResultSet rs = stm.executeQuery();
+			while (rs.next()) {
+
+				aniResp.setIdade(rs.getInt("id"));
+				aniResp.setNome(rs.getString("nome"));
+				aniResp.setRaca(rs.getString("raca"));
+				aniResp.setIdade(rs.getInt("idade"));
+				aniResp.setTipo(rs.getString("tipo"));
+
+			}
+			rs.close();
+			stm.close();
+			con.close();
+
+			return aniResp;
 
 		} catch (SQLException e) {
 			e.printStackTrace();

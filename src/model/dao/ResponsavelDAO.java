@@ -56,7 +56,7 @@ public class ResponsavelDAO {
 
 			Connection con = conexao.getConection();
 			Statement st = (Statement) con.createStatement();
-			String sql = String.format("DELETE FROM Responsavel WHERE nome='%s'", responsavel.getNome());
+			String sql = String.format("DELETE FROM Responsavel WHERE cpf='%s'", responsavel.getCpf());
 			st.executeUpdate(sql);
 			con.close();
 
