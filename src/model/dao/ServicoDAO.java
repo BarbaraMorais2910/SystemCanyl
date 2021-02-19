@@ -92,6 +92,7 @@ public class ServicoDAO {
 				ServicoVO ser = new ServicoVO();
 
 				ser.setTipo(rs.getString("tipo"));
+				ser.setValor(rs.getDouble("valor"));
 				ser.setDataInicio(rs.getDate("dataInicio"));
 				ser.setDataFim(rs.getDate("dataFim"));
 				ser.setResponsavelCpf(rs.getString("responsavelCpf"));

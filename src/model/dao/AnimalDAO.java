@@ -17,7 +17,7 @@ public class AnimalDAO {
 		conexao = new ConexaoDB();
 	}
 
-	public void inserir(AnimalVO animal) {
+	public boolean inserir(AnimalVO animal) {
 		try {
 
 			Connection con = conexao.getConection();
@@ -28,9 +28,10 @@ public class AnimalDAO {
 					animal.getResponsavelCpf());
 			st.executeUpdate(sql);
 			con.close();
-
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 

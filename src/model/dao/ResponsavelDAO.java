@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import model.vo.AnimalVO;
 import model.vo.ResponsavelVO;
 
 public class ResponsavelDAO {
@@ -16,7 +17,7 @@ public class ResponsavelDAO {
 		conexao = new ConexaoDB();
 	}
 
-	public void inserir(ResponsavelVO responsavel) {
+	public boolean inserir(ResponsavelVO responsavel) {
 		try {
 
 			Connection con = conexao.getConection();
@@ -27,9 +28,10 @@ public class ResponsavelDAO {
 					responsavel.getUF());
 			st.executeUpdate(sql);
 			con.close();
-
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -96,4 +98,36 @@ public class ResponsavelDAO {
 
 		return null;
 	}
+
+	public ResponsavelVO listarPorCpf(ResponsavelVO responsavel) {
+		try {
+			Connection con = conexao.getConection();
+
+			ResponsavelVO cliResp = new ResponsavelVO();
+
+			String sql = String.format("SELECT * FROM Responsavel WHERE cpf='%s'", responsavel.getCpf());
+			PreparedStatement stm = con.prepareStatement(sql);
+			ResultSet rs = stm.executeQuery();
+			while (rs.next()) {
+
+				cliResp.setNome(rs.getString("nome"));
+				cliResp.setCpf(rs.getString("cpf"));
+				cliResp.setEndereco(rs.getString("endereco"));
+				cliResp.setCidade(rs.getString("cidade"));
+				cliResp.setUF(rs.getString("uf"));
+
+			}
+			rs.close();
+			stm.close();
+			con.close();
+
+			return cliResp;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 }

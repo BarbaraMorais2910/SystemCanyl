@@ -1,7 +1,9 @@
 package controller;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,23 +18,23 @@ public class ClienteControle {
 	private ResponsavelDAO respDAO;
 	private AnimalDAO aniDAO;
 	private ServicoDAO serDAO;
-	
+
 	public ClienteControle() {
 		respDAO = new ResponsavelDAO();
 		aniDAO = new AnimalDAO();
 		serDAO = new ServicoDAO();
 	}
-
-	public void salvarClienteAnimal(String nomeCliente, String cpf, String endereco, String cidade, String uF,
+	
+	public boolean salvarClienteAnimal(String nomeCliente, String cpf, String endereco, String cidade, String uF,
 			String nomeAnimal, String raca, int idade, String tipo) {
 
 		ResponsavelVO respVO = new ResponsavelVO(nomeCliente, cpf, endereco, cidade, uF);
 		AnimalVO aniVO = new AnimalVO(nomeAnimal, raca, idade, tipo, cpf);
 
-		respDAO.inserir(respVO);
-		aniDAO.inserir(aniVO);
+		boolean statusResp = respDAO.inserir(respVO);
+		boolean statusAni = aniDAO.inserir(aniVO);
 
-		System.out.println("Registro inserido com sucesso!");
+		return (statusResp && statusAni);
 	}
 
 	public void encherTabela(DefaultTableModel tabelaModelo) {
@@ -72,7 +74,7 @@ public class ClienteControle {
 		AnimalVO animal = new AnimalVO();
 		animal.setResponsavelCpf(cpfSele);
 		aniDAO.excluir(animal);
-		
+
 		ServicoVO servico = new ServicoVO();
 		servico.setResponsavelCpf(cpfSele);
 		serDAO.excluir(servico);
@@ -85,6 +87,50 @@ public class ClienteControle {
 
 		limparTabela(tabelaModelo);
 		encherTabela(tabelaModelo);
+	}
+
+	public ResponsavelVO getClientePorCpf(JTable tabela, DefaultTableModel tabelaModelo) {
+		int idLinha = tabela.getSelectedRow();
+		String cpfSele = (String) tabelaModelo.getValueAt(idLinha, 1);
+
+		ResponsavelVO responsavel = new ResponsavelVO();
+		responsavel.setCpf(cpfSele);
+		ResponsavelVO responsavelResp = respDAO.listarPorCpf(responsavel);
+
+		return responsavelResp;
+	}
+
+	public AnimalVO getAnimalPorCpf(JTable tabela, DefaultTableModel tabelaModelo) {
+		int idLinha = tabela.getSelectedRow();
+		String cpfSele = (String) tabelaModelo.getValueAt(idLinha, 1);
+
+		AnimalVO animal = new AnimalVO();
+		animal.setResponsavelCpf(cpfSele);
+		AnimalVO animalResp = aniDAO.listarPorCpf(animal);
+
+		return animalResp;
+	}
+
+	public boolean buscarClienteTabela(DefaultTableModel tabelaModelo, String textBuscaCpf) {
+
+		ResponsavelVO responsavel = new ResponsavelVO();
+		responsavel.setCpf(textBuscaCpf);
+
+		AnimalVO animal = new AnimalVO();
+		animal.setResponsavelCpf(textBuscaCpf);
+
+		ResponsavelVO resResp = respDAO.listarPorCpf(responsavel);
+		AnimalVO aniResp = aniDAO.listarPorCpf(animal);
+
+		if (resResp.getNome() == null) {
+			return false;
+		} else {
+			limparTabela(tabelaModelo);
+			tabelaModelo.addRow(
+					new Object[] { resResp.getNome(), resResp.getCpf(), aniResp.getNome(), aniResp.getTipo(), });
+
+			return true;
+		}
 	}
 
 }

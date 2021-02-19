@@ -1,8 +1,5 @@
 package view;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,6 +9,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -22,11 +20,18 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import controller.ClienteControle;
+import model.vo.AnimalVO;
+import model.vo.ResponsavelVO;
 
 public class PainelCadastroCliente extends JPanel implements ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private ClienteControle clienteControle;
 
-	private JButton butaoSalvar, butaoAbrir, butaoExcluir, butaoLimpar;
+	private JButton butaoSalvar, butaoAbrir, butaoExcluir, butaoLimpar, botaoBuscaCpf;
 
 	private JTable tabela;
 	private DefaultTableModel tabelaModelo;
@@ -37,9 +42,11 @@ public class PainelCadastroCliente extends JPanel implements ActionListener {
 
 	private JLabel labelNomeAnimal, labelRacaAnimal, labelIdadeAnimal, labelTipoAnimal;
 	private JTextField textNomeAnimal, textRacaAnimal, textIdadeAnimal;
-	private ComboBoxModel tipoAnimalModel;
-	private JComboBox tipoAnimal;
+	private ComboBoxModel<String> tipoAnimalModel;
+	private JComboBox<String> tipoAnimal;
 	private static int larguraText = 30;
+
+	private JTextField textBuscaCpf;
 
 	private JPanel painelBuscas;
 
@@ -55,6 +62,11 @@ public class PainelCadastroCliente extends JPanel implements ActionListener {
 		montaFormularioAnimal();
 		montaPainelBusca();
 
+		updateTabela();
+	}
+
+	public void updateTabela() {
+		clienteControle.limparTabela(tabelaModelo);
 		clienteControle.encherTabela(tabelaModelo);
 	}
 
@@ -161,13 +173,18 @@ public class PainelCadastroCliente extends JPanel implements ActionListener {
 		painelBuscas.setBounds(10, 300, 700, 330);
 		this.add(painelBuscas);
 
-		JLabel buscaNome = new JLabel("Nome:");
-		buscaNome.setBounds(160, 15, 80, larguraText);
-		painelBuscas.add(buscaNome);
+		JLabel buscaCpf = new JLabel("CPF:");
+		buscaCpf.setBounds(100, 15, 80, larguraText);
+		painelBuscas.add(buscaCpf);
 
-		JTextField textBusca = new JTextField();
-		textBusca.setBounds(250, 20, 300, larguraText);
-		painelBuscas.add(textBusca);
+		textBuscaCpf = new JTextField();
+		textBuscaCpf.setBounds(150, 20, 300, larguraText);
+		painelBuscas.add(textBuscaCpf);
+
+		botaoBuscaCpf = new JButton("Buscar");
+		botaoBuscaCpf.setBounds(460, 20, 130, larguraText);
+		botaoBuscaCpf.addActionListener(this);
+		painelBuscas.add(botaoBuscaCpf);
 
 		// tabela------
 
@@ -190,6 +207,7 @@ public class PainelCadastroCliente extends JPanel implements ActionListener {
 
 		butaoAbrir = new JButton("Abrir");
 		butaoAbrir.setBounds(localBt + 140, 285, 130, 35);
+		butaoAbrir.addActionListener(this);
 		painelBuscas.add(butaoAbrir);
 
 		butaoExcluir = new JButton("Excluir");
@@ -199,6 +217,7 @@ public class PainelCadastroCliente extends JPanel implements ActionListener {
 
 		butaoLimpar = new JButton("Limpar");
 		butaoLimpar.setBounds(localBt + 420, 285, 130, 35);
+		butaoLimpar.addActionListener(this);
 		painelBuscas.add(butaoLimpar);
 
 	}
@@ -207,18 +226,76 @@ public class PainelCadastroCliente extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (butaoSalvar == e.getSource()) {
 			String tipo = tipoAnimal.getSelectedItem().toString();
-			clienteControle.salvarClienteAnimal(textNome.getText(), textCpf.getText(), textEndereco.getText(),
-					textCidade.getText(), textUf.getText(), textNomeAnimal.getText(), textRacaAnimal.getText(),
-					Integer.parseInt(textIdadeAnimal.getText()), tipo);
+			boolean status = clienteControle.salvarClienteAnimal(textNome.getText(), textCpf.getText(),
+					textEndereco.getText(), textCidade.getText(), textUf.getText(), textNomeAnimal.getText(),
+					textRacaAnimal.getText(), Integer.parseInt(textIdadeAnimal.getText()), tipo);
 
-			clienteControle.limparTabela(tabelaModelo);
-			clienteControle.encherTabela(tabelaModelo);
+			if (status == false) {
+				JOptionPane.showMessageDialog(null,
+						String.format("Verifique se cliente com CPF %s já está cadastrado!", textCpf.getText()));
+			} else {
+				clienteControle.limparTabela(tabelaModelo);
+				clienteControle.encherTabela(tabelaModelo);
+			}
 
 		}
 
 		else if (butaoExcluir == e.getSource()) {
-			clienteControle.excluirCliente(tabela, tabelaModelo);
-		}
-	}
 
+			int clienteSelecionada = tabela.getSelectedRow();
+			if (clienteSelecionada == -1) {
+				JOptionPane.showMessageDialog(null, "Selecione um cliente para excluir!");
+			} else {
+				clienteControle.excluirCliente(tabela, tabelaModelo);
+			}
+
+		} else if (butaoLimpar == e.getSource()) {
+			textNome.setText("");
+			textCpf.setText("");
+			textEndereco.setText("");
+			textCidade.setText("");
+			textUf.setText("");
+			textNomeAnimal.setText("");
+			textRacaAnimal.setText("");
+			textIdadeAnimal.setText("");
+		}
+
+		else if (butaoAbrir == e.getSource()) {
+			int clienteSelecionada = tabela.getSelectedRow();
+			if (clienteSelecionada == -1) {
+				JOptionPane.showMessageDialog(null, "Selecione um cliente ver todos os dados!");
+			} else {
+				AnimalVO ani = clienteControle.getAnimalPorCpf(tabela, tabelaModelo);
+				ResponsavelVO resp = clienteControle.getClientePorCpf(tabela, tabelaModelo);
+
+				textNome.setText(resp.getNome());
+				textCpf.setText(resp.getCpf());
+				textEndereco.setText(resp.getEndereco());
+				textCidade.setText(resp.getCidade());
+				textUf.setText(resp.getUF());
+				textNomeAnimal.setText(ani.getNome());
+				textRacaAnimal.setText(ani.getRaca());
+				textIdadeAnimal.setText(String.format("%d", ani.getIdade()));
+
+				tipoAnimalModel.setSelectedItem(ani.getTipo());
+			}
+		}
+
+		else if (botaoBuscaCpf == e.getSource()) {
+
+			String cpfParaBuscar = textBuscaCpf.getText();
+			if (cpfParaBuscar.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Digite um CPF para ser buscado!");
+			} else {
+				boolean status = clienteControle.buscarClienteTabela(tabelaModelo, cpfParaBuscar);
+
+				if (status == false) {
+					JOptionPane.showMessageDialog(null,
+							String.format("O cliente com CPF %s não foi encontrado!", cpfParaBuscar));
+				}
+
+			}
+		}
+
+	}
 }

@@ -20,7 +20,8 @@ public class PainelBotoes extends JPanel {
 	private ImageIcon imgCadastro, imgServico, imgRelatorio;
 	private ImageIcon imgCadastroFoco, imgServicoFoco, imgRelatorioFoco;
 
-	public PainelBotoes(JPanel painelCadastro, PainelServicos painelServicos, JPanel painelRelatorio) {
+	public PainelBotoes(final PainelCadastroCliente painelCadastro, final PainelServicos painelServicos,
+			final PainelRelatorio painelRelatorio) {
 		// this.setBackground(Color.WHITE);
 		this.setLayout(null);
 		this.setBorder(BorderFactory.createTitledBorder(null, "Funções", TitledBorder.LEADING,
@@ -42,6 +43,8 @@ public class PainelBotoes extends JPanel {
 				butaoCadastro.setIcon(imgCadastroFoco);
 				butaoServicos.setIcon(imgServico);
 				butaoRelatorio.setIcon(imgRelatorio);
+
+				painelCadastro.updateTabela();
 			}
 		});
 		butaoCadastro.setBounds(10, 40, 180, 50);
@@ -87,6 +90,7 @@ public class PainelBotoes extends JPanel {
 				butaoServicos.setIcon(imgServico);
 				butaoRelatorio.setIcon(imgRelatorioFoco);
 
+				painelRelatorio.updateTabela();
 			}
 		});
 		butaoRelatorio.setBounds(10, 160, 180, 50);

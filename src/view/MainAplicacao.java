@@ -17,11 +17,13 @@ public class MainAplicacao extends JFrame {
 	 * e.printStackTrace(); } }
 	 */
 
-	private JPanel painelBotoes, painelCadastro, painelRelatorio;
+	private JPanel painelBotoes;
+	private PainelCadastroCliente painelCadastro;
 	private PainelServicos painelServicos;
+	private PainelRelatorio painelRelatorio;
 
 	public MainAplicacao() {
-		super("Sistema de gerenciamento de PetShop");
+		super("Sistema de gerenciamento de Canil e Gatil");
 		setLayout(null);
 
 		painelCadastro = new PainelCadastroCliente();

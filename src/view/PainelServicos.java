@@ -50,10 +50,12 @@ public class PainelServicos extends JPanel implements ActionListener {
 
 	private JDateChooser dataInicio, dataFim;
 
-	private JButton butaoAdicionar, butaoExcluir, butaoSalvar;
+	private JButton butaoAdicionar, butaoExcluir, butaoSalvar, botaoBuscaCpf;
 
 	private JPanel painelBuscas, painelAdicionarServico;
 	private static int larguraText = 30;
+
+	private JTextField textBuscaCpf;
 
 	private ArrayList<ServicoVO> servicos = new ArrayList<ServicoVO>();
 
@@ -87,13 +89,18 @@ public class PainelServicos extends JPanel implements ActionListener {
 		painelBuscas.setBounds(10, 30, 700, 290);
 		this.add(painelBuscas);
 
-		JLabel buscaNome = new JLabel("Nome:");
-		buscaNome.setBounds(160, 15, 80, larguraText);
-		painelBuscas.add(buscaNome);
+		JLabel buscaCpf = new JLabel("CPF:");
+		buscaCpf.setBounds(100, 15, 80, larguraText);
+		painelBuscas.add(buscaCpf);
 
-		JTextField textBusca = new JTextField();
-		textBusca.setBounds(250, 20, 300, larguraText);
-		painelBuscas.add(textBusca);
+		textBuscaCpf = new JTextField();
+		textBuscaCpf.setBounds(150, 20, 300, larguraText);
+		painelBuscas.add(textBuscaCpf);
+
+		botaoBuscaCpf = new JButton("Buscar");
+		botaoBuscaCpf.setBounds(460, 20, 130, larguraText);
+		botaoBuscaCpf.addActionListener(this);
+		painelBuscas.add(botaoBuscaCpf);
 
 		// tabela------
 
@@ -113,8 +120,8 @@ public class PainelServicos extends JPanel implements ActionListener {
 
 	public void acaoTabelaCliente() {
 
-		ServicoDAO serDAO = new ServicoDAO();
-		ServicoVO ser = new ServicoVO();
+		final ServicoDAO serDAO = new ServicoDAO();
+		final ServicoVO ser = new ServicoVO();
 
 		tabelaCliente.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -284,7 +291,8 @@ public class PainelServicos extends JPanel implements ActionListener {
 			int idLinha = tabelaServico.getSelectedRow();
 			System.out.println(idLinha);
 			// System.out.println(tabelaModeloServico.getValueAt(idLinha, 1));
-			// int idSele = (Integer) tabelaModeloServico.getValueAt(linhaSelecionada, 1);
+			// int idSele = (Integer)
+			// tabelaModeloServico.getValueAt(linhaSelecionada, 1);
 
 			servicos.remove(idLinha);
 
@@ -332,6 +340,23 @@ public class PainelServicos extends JPanel implements ActionListener {
 			}
 
 		}
+		
+		else if (botaoBuscaCpf == e.getSource()) {
+
+			String cpfParaBuscar = textBuscaCpf.getText();
+			if (cpfParaBuscar.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Digite um CPF para ser buscado!");
+			} else {
+				boolean status = clienteControle.buscarClienteTabela(tabelaClienteModelo, cpfParaBuscar);
+
+				if (status == false) {
+					JOptionPane.showMessageDialog(null,
+							String.format("O cliente com CPF %s não foi encontrado!", cpfParaBuscar));
+				}
+
+			}
+		}
+		
 
 	}
 
